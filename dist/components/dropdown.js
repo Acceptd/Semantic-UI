@@ -1027,11 +1027,27 @@ $.fn.dropdown = function(parameters) {
             }
           },
           operation: {
+            select: function($selectedItem) {
+              var originalOnChange = settings.onChange;
+              var changedArguments = null;
+              settings.onChange = function() {
+                changedArguments = arguments;
+              };
+              if($selectedItem) {
+                module.set.selected(null, $selectedItem);
+              } else {
+                module.set.selected();
+              }
+              settings.onChange = originalOnChange;
+              if(changedArguments) {
+                settings.onChange.apply(null, changedArguments);
+              }
+            },
             selectAll: function(event) {
-              module.set.selected(null, $menu.find(selector.item));
+              module.event.operation.select($menu.find(selector.item));
             },
             unselectAll: function(event) {
-              module.set.selected();
+              module.event.operation.select();
             }
           },
 
