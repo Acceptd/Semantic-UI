@@ -321,6 +321,17 @@ $.fn.dropdown = function(parameters) {
               if($input.is('[multiple]')) {
                 module.set.multiple();
               }
+              if(module.is.multiple() && settings.showSelectAll) {
+                var $selectAll = $('<div />').html(message.selectAll);
+                $selectAll.addClass(className.operation);
+                $selectAll.addClass(className.selectAll);
+                $module.find('.menu').prepend($selectAll);
+
+                var $unselectAll = $('<div />').html(message.unselectAll);
+                $unselectAll.addClass(className.operation);
+                $unselectAll.addClass(className.unselectAll);
+                $module.find('.menu').prepend($unselectAll);
+              }
               if ($input.prop('disabled')) {
                 module.debug('Disabling dropdown')
                 $module.addClass(className.disabled)
@@ -564,6 +575,8 @@ $.fn.dropdown = function(parameters) {
               .on('mouseenter' + eventNamespace, selector.item, module.event.item.mouseenter)
               .on('mouseleave' + eventNamespace, selector.item, module.event.item.mouseleave)
               .on('click'      + eventNamespace, selector.item, module.event.item.click)
+              .on('click'      + eventNamespace, selector.selectAll, module.event.operation.selectAll)
+              .on('click'      + eventNamespace, selector.unselectAll, module.event.operation.unselectAll)
             ;
           },
           intent: function() {
@@ -1011,6 +1024,14 @@ $.fn.dropdown = function(parameters) {
                 }
                 module.determine.selectAction.call(this, text, value);
               }
+            }
+          },
+          operation: {
+            selectAll: function(event) {
+              module.set.selected(null, $menu.find(selector.item));
+            },
+            unselectAll: function(event) {
+              module.set.selected();
             }
           },
 
@@ -3235,6 +3256,7 @@ $.fn.dropdown.settings = {
   maxSelections          : false,      // When set to a number limits the number of selections to this count
   useLabels              : true,       // whether multiple select should filter currently active selections from choices
   delimiter              : ',',        // when multiselect uses normal <input> the values will be delimited with this character
+  showSelectAll          : false,      // whether multiple select should show items in the list to "select all" options and "unselect all" options
 
   showOnFocus            : true,       // show menu on focus
   allowTab               : true,       // add tabindex to element
@@ -3282,7 +3304,9 @@ $.fn.dropdown.settings = {
     count         : '{count} selected',
     maxSelections : 'Max {maxCount} selections',
     noResults     : 'No results found.',
-    serverError   : 'There was an error contacting the server'
+    selectAll     : 'Select All',
+    serverError   : 'There was an error contacting the server',
+    unselectAll   : 'Unselect All',
   },
 
   error : {
@@ -3328,8 +3352,10 @@ $.fn.dropdown.settings = {
     message      : '.message',
     menuIcon     : '.dropdown.icon',
     search       : 'input.search, .menu > .search > input',
+    selectAll    : '.select-all',
     text         : '> .text:not(.icon)',
-    unselectable : '.disabled, .filtered'
+    unselectable : '.disabled, .filtered',
+    unselectAll  : '.unselect-all',
   },
 
   className : {
@@ -3346,10 +3372,13 @@ $.fn.dropdown.settings = {
     menu        : 'menu',
     message     : 'message',
     multiple    : 'multiple',
+    operation   : 'operation',
     placeholder : 'default',
     search      : 'search',
+    selectAll   : 'select-all',
     selected    : 'selected',
     selection   : 'selection',
+    unselectAll : 'unselect-all',
     upward      : 'upward',
     visible     : 'visible'
   }
