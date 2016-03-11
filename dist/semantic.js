@@ -1,5 +1,5 @@
  /*
- * # Semantic UI - 2.1.7
+ * # Semantic UI - 2.1.8
  * https://github.com/Semantic-Org/Semantic-UI
  * http://www.semantic-ui.com/
  *
@@ -9,7 +9,7 @@
  *
  */
 /*!
- * # Semantic UI 2.1.7 - Site
+ * # Semantic UI 2.1.8 - Site
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -497,7 +497,7 @@ $.extend($.expr[ ":" ], {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Form Validation
+ * # Semantic UI 2.1.8 - Form Validation
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -2015,7 +2015,7 @@ $.fn.form.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Accordion
+ * # Semantic UI 2.1.8 - Accordion
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -2612,7 +2612,7 @@ $.extend( $.easing, {
 
 
 /*!
- * # Semantic UI 2.1.7 - Checkbox
+ * # Semantic UI 2.1.8 - Checkbox
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -3422,7 +3422,7 @@ $.fn.checkbox.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Dimmer
+ * # Semantic UI 2.1.8 - Dimmer
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -4115,7 +4115,7 @@ $.fn.dimmer.settings = {
 
 })( jQuery, window, document );
 /*!
- * # Semantic UI 2.1.7 - Dropdown
+ * # Semantic UI 2.1.8 - Dropdown
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -4439,6 +4439,17 @@ $.fn.dropdown = function(parameters) {
               if($input.is('[multiple]')) {
                 module.set.multiple();
               }
+              if(module.is.multiple() && settings.showSelectAll) {
+                var $selectAll = $('<div />').html(message.selectAll);
+                $selectAll.addClass(className.operation);
+                $selectAll.addClass(className.selectAll);
+                $module.find('.menu').prepend($selectAll);
+
+                var $unselectAll = $('<div />').html(message.unselectAll);
+                $unselectAll.addClass(className.operation);
+                $unselectAll.addClass(className.unselectAll);
+                $module.find('.menu').prepend($unselectAll);
+              }
               if ($input.prop('disabled')) {
                 module.debug('Disabling dropdown')
                 $module.addClass(className.disabled)
@@ -4682,6 +4693,8 @@ $.fn.dropdown = function(parameters) {
               .on('mouseenter' + eventNamespace, selector.item, module.event.item.mouseenter)
               .on('mouseleave' + eventNamespace, selector.item, module.event.item.mouseleave)
               .on('click'      + eventNamespace, selector.item, module.event.item.click)
+              .on('click'      + eventNamespace, selector.selectAll, module.event.operation.selectAll)
+              .on('click'      + eventNamespace, selector.unselectAll, module.event.operation.unselectAll)
             ;
           },
           intent: function() {
@@ -5135,6 +5148,30 @@ $.fn.dropdown = function(parameters) {
                 }
                 module.determine.selectAction.call(this, text, value);
               }
+            }
+          },
+          operation: {
+            select: function($selectedItem) {
+              var originalOnChange = settings.onChange;
+              var changedArguments = null;
+              settings.onChange = function() {
+                changedArguments = arguments;
+              };
+              if($selectedItem) {
+                module.set.selected(null, $selectedItem);
+              } else {
+                module.set.selected();
+              }
+              settings.onChange = originalOnChange;
+              if(changedArguments) {
+                settings.onChange.apply(null, changedArguments);
+              }
+            },
+            selectAll: function(event) {
+              module.event.operation.select($menu.find(selector.item));
+            },
+            unselectAll: function(event) {
+              module.event.operation.select();
             }
           },
 
@@ -7360,6 +7397,7 @@ $.fn.dropdown.settings = {
   maxSelections          : false,      // When set to a number limits the number of selections to this count
   useLabels              : true,       // whether multiple select should filter currently active selections from choices
   delimiter              : ',',        // when multiselect uses normal <input> the values will be delimited with this character
+  showSelectAll          : false,      // whether multiple select should show items in the list to "select all" options and "unselect all" options
 
   showOnFocus            : true,       // show menu on focus
   allowTab               : true,       // add tabindex to element
@@ -7408,7 +7446,9 @@ $.fn.dropdown.settings = {
     count         : '{count} selected',
     maxSelections : 'Max {maxCount} selections',
     noResults     : 'No results found.',
-    serverError   : 'There was an error contacting the server'
+    selectAll     : 'Select All',
+    serverError   : 'There was an error contacting the server',
+    unselectAll   : 'Unselect All',
   },
 
   error : {
@@ -7469,8 +7509,10 @@ $.fn.dropdown.settings = {
     message      : '.message',
     menuIcon     : '.dropdown.icon',
     search       : 'input.search, .menu > .search > input',
+    selectAll    : '.select-all',
     text         : '> .text:not(.icon)',
-    unselectable : '.disabled, .filtered'
+    unselectable : '.disabled, .filtered',
+    unselectAll  : '.unselect-all',
   },
 
   className : {
@@ -7487,10 +7529,13 @@ $.fn.dropdown.settings = {
     menu        : 'menu',
     message     : 'message',
     multiple    : 'multiple',
+    operation   : 'operation',
     placeholder : 'default',
     search      : 'search',
+    selectAll   : 'select-all',
     selected    : 'selected',
     selection   : 'selection',
+    unselectAll : 'unselect-all',
     upward      : 'upward',
     visible     : 'visible'
   }
@@ -7558,7 +7603,7 @@ $.fn.dropdown.settings.templates = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Video
+ * # Semantic UI 2.1.8 - Video
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -8218,7 +8263,7 @@ $.fn.embed.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Modal
+ * # Semantic UI 2.1.8 - Modal
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -9111,7 +9156,7 @@ $.fn.modal.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Nag
+ * # Semantic UI 2.1.8 - Nag
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -9598,7 +9643,7 @@ $.fn.nag.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Popup
+ * # Semantic UI 2.1.8 - Popup
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -11012,7 +11057,7 @@ $.fn.popup.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Progress
+ * # Semantic UI 2.1.8 - Progress
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -11807,7 +11852,7 @@ $.fn.progress.settings = {
 
 })( jQuery, window, document );
 /*!
- * # Semantic UI 2.1.7 - Rating
+ * # Semantic UI 2.1.8 - Rating
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -12283,7 +12328,7 @@ $.fn.rating.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Search
+ * # Semantic UI 2.1.8 - Search
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -13629,7 +13674,7 @@ $.fn.search.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Shape
+ * # Semantic UI 2.1.8 - Shape
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -14505,7 +14550,7 @@ $.fn.shape.settings = {
 
 })( jQuery, window, document );
 /*!
- * # Semantic UI 2.1.7 - Sidebar
+ * # Semantic UI 2.1.8 - Sidebar
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -15528,7 +15573,7 @@ $.fn.sidebar.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Sticky
+ * # Semantic UI 2.1.8 - Sticky
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -16435,7 +16480,7 @@ $.fn.sticky.settings = {
 
 })( jQuery, window, document );
 /*!
- * # Semantic UI 2.1.7 - Tab
+ * # Semantic UI 2.1.8 - Tab
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -17334,7 +17379,7 @@ $.fn.tab.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Transition
+ * # Semantic UI 2.1.8 - Transition
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -18409,7 +18454,7 @@ $.fn.transition.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - API
+ * # Semantic UI 2.1.8 - API
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -19552,7 +19597,7 @@ $.api.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - State
+ * # Semantic UI 2.1.8 - State
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -20248,7 +20293,7 @@ $.fn.state.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.1.7 - Visibility
+ * # Semantic UI 2.1.8 - Visibility
  * http://github.com/semantic-org/semantic-ui/
  *
  *
